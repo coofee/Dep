@@ -83,3 +83,5 @@ python systrace.py -a com.coofee.dep.demo -o trace.html sched freq
 1. 对初始化任务设置合适的线程数，让任务能够并行执行。
 2. 优化任务间的依赖关系，尽可能减少等待时间。
 3. 拆解耗时长的任务为多个子任务，并行加速任务执行。
+
+
