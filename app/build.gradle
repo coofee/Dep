@@ -8,12 +8,23 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
     defaultConfig {
-        applicationId "com.coofee.dep.demo"
+        applicationId "${rootProject.applicationId}"
         minSdkVersion 14
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        println("applicationId=${rootProject.applicationId}, " +
+                "applicationLabel=${rootProject.applicationLabel}, " +
+                "applicationSheme=${rootProject.applicationSheme}")
+
+        manifestPlaceholders = [
+                "applicationLabel": "${rootProject.applicationLabel}",
+                "applicationSheme": "${rootProject.applicationSheme}"
+        ]
+
+        buildConfigField("String", "SCHEME", "\"${rootProject.applicationSheme}\"")
     }
     buildTypes {
         release {
@@ -34,6 +45,4 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
-
-    implementation project(':dep')
 }

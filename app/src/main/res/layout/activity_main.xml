@@ -1,49 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="bottom"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/invokeConditionPermissionLocation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:text="invoke CONDITION_PERMISSION_LOCATION"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/back_url"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.0"
+        android:gravity="center"
+        android:textSize="20sp"
+        tools:text="xxxxx" />
 
     <Button
-        android:id="@+id/invokeConditionLaunchAd"
-        android:layout_width="wrap_content"
+        android:id="@+id/open_town_native"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:text="invoke CONDITION_LAUNCH_AD_SHOW"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/invokeConditionPermissionLocation" />
+        android:text="打开同镇Native页面" />
 
     <Button
-        android:id="@+id/invokeConditionDatabase"
-        android:layout_width="wrap_content"
+        android:id="@+id/open_town_web"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:text="invoke CONDITION_DATABASE"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/invokeConditionLaunchAd" />
+        android:text="打开同镇Web页面" />
 
     <Button
-        android:id="@+id/invokeConditionLaunchShow"
-        android:layout_width="wrap_content"
+        android:id="@+id/open_town_rn"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:text="invoke CONDITION_LAUNCH_SHOW"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/invokeConditionDatabase" />
+        android:text="打开同镇RN页面" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
