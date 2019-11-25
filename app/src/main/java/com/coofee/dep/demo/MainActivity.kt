@@ -25,7 +25,7 @@ const val PROTOCOL_WEB =
     "wbutown://jump/town/common?params=%7B%22ailog%22%3A%22%7B%5C%22abtestno%5C%22%3A%5C%22D_house-recall-strategy-1%7CE_fusion-strategy-2%7CF_itemhot-strategy-1%7CG_rank-strategy-3%7CA_smartrecommend-1%7CB_news-recall-strategy-1%7CC_job-recall-strategy-1%7CH_profile-strategy-1%7CI_scatter-strategy-2%5C%22%2C%5C%22channel%5C%22%3A%5C%221%5C%22%2C%5C%22cityId%5C%22%3A0%2C%5C%22countryId%5C%22%3A0%2C%5C%22datasource%5C%22%3A1%2C%5C%22extendJson%5C%22%3A%5C%22%7B%5C%5C%5C%22recallNumbers%5C%5C%5C%22%3A%5B2%2C50%5D%7D%5C%22%2C%5C%22feedtab%5C%22%3A%5C%22recommend%5C%22%2C%5C%22flag%5C%22%3A1%2C%5C%22infoQueryType%5C%22%3A1%2C%5C%22itemType%5C%22%3A0%2C%5C%22itemid%5C%22%3A%5C%22100812280%5C%22%2C%5C%22predictno%5C%22%3A11%2C%5C%22productType%5C%22%3A1%2C%5C%22profileFlag%5C%22%3A1%2C%5C%22publishType%5C%22%3A2%2C%5C%22recallno%5C%22%3A2%2C%5C%22seqno%5C%22%3A%5C%22d0eb9dc4-c6c6-445b-9598-938880dc970f%5C%22%2C%5C%22townId%5C%22%3A0%7D%22%2C%22title%22%3A%22%E8%AF%A6%E6%83%85%22%2C%22url%22%3A%22https%3A%2F%2Ftznew.58.com%2Fview%2Fc%2FsharingDetailNew%3Finfoid%3D1063457161493368832%26oldInfoid%3D100812280%26detailFrom%3D4%26sharesource%3Dtcrecommendshare%26fromFeed%3D1%26source%3D17%22%7D&isFinish=false&needLogin=false"
 
 const val PROTOCOL_RN =
-    "wbutown://jump/town/RN?needLogin=false&isFinish=false&params=%7B%22bundleid%22%3A%222%22%2C%22mMainModuleName%22%3A%22index.android%22%2C%22isfinish%22%3Afalse%2C%22protocol%22%3A%22https%3A%22%2C%22title%22%3A%22%E6%95%B4%E5%A5%97%E5%87%BA%E7%A7%9F%22%2C%22params%22%3A%7B%22infoid%22%3A%22%22%2C%22cateid%22%3A%228%22%2C%22type%22%3A%22%22%2C%22pagestate%22%3A%22create%22%2C%22catename%22%3A%22%E6%95%B4%E5%A5%97%E5%87%BA%E7%A7%9F%22%2C%22needlogin%22%3Atrue%2C%22show_error_navi%22%3Atrue%2C%22hideBar%22%3A0%7D%7D"
+    "wbutown://jump/town/RN?params=%7B%22protocol%22%3A%22https%22%2C%22mMainModuleName%22%3A%22index.android%22%2C%22bundleid%22%3A%22237%22%2C%22isFinish%22%3Afalse%2C%22params%22%3A%7B%22isFromResumeGuide%22%3A0%2C%22infoid%22%3A%22%22%2C%22hideBar%22%3A1%2C%22edit%22%3A0%2C%22logParams%22%3A%22%5B%5C%2266567958589448%5C%22%2C%5C%22110000000000%2C110100000000%2C110105000000%2C110105023000%5C%22%2C%5C%221000002%5C%22%2C%5C%22%5C%22%2C%5C%22%5C%22%2C%5C%22%5C%22%5D%22%2C%22pagestate%22%3A%22create%22%2C%22userIdent%22%3A%225%22%2C%22needlogin%22%3Atrue%2C%22show_error_navi%22%3Atrue%7D%7D&isFinish=false&needLogin=false"
 
 class MainActivity : AppCompatActivity() {
 
@@ -66,9 +66,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun open(protocol: String) {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(protocol))
-            .addCategory(Intent.CATEGORY_BROWSABLE)
-            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(protocol)).apply {
+            addCategory(Intent.CATEGORY_DEFAULT)
+            addCategory(Intent.CATEGORY_BROWSABLE)
+            flags = (Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
+        }
+
+
+//        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(protocol))
+//            .addCategory(Intent.CATEGORY_BROWSABLE)
+//            .setFlags(
+//                Intent.FLAG_ACTIVITY_NEW_TASK
+//                    or Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
+//            )
         startActivity(intent)
     }
 }
