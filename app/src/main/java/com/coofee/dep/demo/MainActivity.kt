@@ -9,9 +9,13 @@ import java.net.URLEncoder
 
 const val BACK_URL = "${BuildConfig.SCHEME}://xxx/xxx?type="
 
+const val DOUYIN_SCHEME =
+    "snssdk1128://aweme/detail/6534452667488406792?refer=web&gd_label=click_wap_detail_download_feature&appParam=%7B%22__type__%22%3A%22wap%22%2C%22position%22%3A%22900718067%22%2C%22parent_group_id%22%3A%226553813763982626051%22%2C%22webid%22%3A%226568996356873356814%22%2C%22gd_label%22%3A%22click_wap%22%7D&needlaunchlog=1"
+
 fun appendBackUrl(protocol: String, type: String): String {
-    val backUrl = "$BACK_URL$type&aa=bb&cc=dd"
-    return "$protocol&backurl=${URLEncoder.encode(backUrl, "utf-8")}"
+//    val backUrl = "$BACK_URL$type&aa=bb&cc=dd"
+//    return "$protocol&backurl=${URLEncoder.encode(backUrl, "utf-8")}"
+    return "$protocol&backurl=${URLEncoder.encode(DOUYIN_SCHEME, "utf-8")}"
 }
 
 const val PROTOCOL_NATIVE =
