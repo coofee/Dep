@@ -11,7 +11,7 @@ const val BACK_URL = "${BuildConfig.SCHEME}://xxx/xxx?type="
 
 fun appendBackUrl(protocol: String, type: String): String {
     val backUrl = "$BACK_URL$type&aa=bb&cc=dd"
-    return "$protocol&backurl=${URLEncoder.encode(backUrl)}"
+    return "$protocol&backurl=${URLEncoder.encode(backUrl, "utf-8")}"
 }
 
 const val PROTOCOL_NATIVE =
