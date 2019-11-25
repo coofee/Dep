@@ -5,11 +5,13 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import java.net.URLEncoder
 
 const val BACK_URL = "${BuildConfig.SCHEME}://xxx/xxx?type="
 
 fun appendBackUrl(protocol: String, type: String): String {
-    return "$protocol&backurl=$BACK_URL$type"
+    val backUrl = "$BACK_URL$type&aa=bb&cc=dd"
+    return "$protocol&backurl=${URLEncoder.encode(backUrl)}"
 }
 
 const val PROTOCOL_NATIVE =
