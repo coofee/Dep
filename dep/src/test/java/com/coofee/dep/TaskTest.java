@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.Map;
+import java.io.IOException;
 import java.util.concurrent.Callable;
 
 public class TaskTest {
@@ -182,7 +182,7 @@ public class TaskTest {
         String task3Result = TaskManager.getInstance().getTaskResult(task3.getName());
         System.out.println("getTaskResult(); task3Result=" + task3Result);
 
-        Map<String, TaskResult<?>> result = TaskManager.getInstance().getTaskResult(taskSet.getName());
+        TaskSet.TaskSetResult result = TaskManager.getInstance().getTaskResult(taskSet.getName());
         System.out.println("getTaskResult(); TaskSet1=" + result);
     }
 
@@ -218,6 +218,28 @@ public class TaskTest {
         TaskManager.getInstance().startTask(taskSet);
 
         TaskManager.getInstance().waitForCompleted();
+    }
+
+    @Test
+    public void testParentTaskError() throws InterruptedException {
+        task2 = wrapMonitor(TaskFactory.from("task_2", new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                throw new Exception("parent task error");
+            }
+        }, true));
+
+//        testTaskSet();
+        testTaskSetJustAdd();
+//        testTaskSetAfter();
+//        testTaskSetBefore();
+//        testTaskManager();
+
+//        try {
+//            System.in.read();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     private static TaskSet wrapTaskSetMonitor(TaskSet taskSet) {

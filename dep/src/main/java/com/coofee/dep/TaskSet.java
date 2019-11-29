@@ -63,7 +63,7 @@ public class TaskSet extends Task {
     }
 
     @Override
-    public TaskResult<Map<String, TaskResult<?>>> waitForTaskResult() throws InterruptedException {
+    public TaskResult<TaskSetResult> waitForTaskResult() throws InterruptedException {
         synchronized (this) {
             while (getTaskState() != Task.STATE_COMPLETED) {
                 wait();
@@ -74,7 +74,7 @@ public class TaskSet extends Task {
     }
 
     @Override
-    public TaskResult<Map<String, TaskResult<?>>> getTaskResult() {
+    public TaskResult<TaskSetResult> getTaskResult() {
         if (getTaskState() != Task.STATE_COMPLETED) {
             return null;
         }
@@ -85,7 +85,13 @@ public class TaskSet extends Task {
             resultMap.put(entry.getKey(), entry.getValue().getTaskResult());
         }
 
-        return TaskResult.success(resultMap);
+        // task set always return success for collecting its task's results.
+        TaskResult endTaskResult = mEndTask.getTaskResult();
+        if (endTaskResult.isFailure()) {
+            return TaskResult.failure(new TaskSetResultError("fail execute " + getName(), endTaskResult.error(), resultMap));
+        } else {
+            return TaskResult.success(new TaskSetResult(getName(), true, resultMap));
+        }
     }
 
     @Override
@@ -177,6 +183,43 @@ public class TaskSet extends Task {
         };
         for (Task task : mAllTask.values()) {
             task.addTaskExecutionListener(allTaskExecutionListener);
+        }
+    }
+
+    public static class TaskSetResultError extends Exception {
+        final Map<String, TaskResult<?>> resultMap;
+
+        public TaskSetResultError(String message, Throwable cause, Map<String, TaskResult<?>> resultMap) {
+            super(message, cause);
+            this.resultMap = resultMap;
+        }
+
+        @Override
+        public String toString() {
+            return "TaskSetResultError{" +
+                    "resultMap=" + resultMap +
+                    '}';
+        }
+    }
+
+    public static class TaskSetResult {
+        final String taskSetName;
+        final boolean allSuccess;
+        final Map<String, TaskResult<?>> resultMap;
+
+        public TaskSetResult(String taskSetName, boolean allSuccess, Map<String, TaskResult<?>> resultMap) {
+            this.taskSetName = taskSetName;
+            this.allSuccess = allSuccess;
+            this.resultMap = resultMap;
+        }
+
+        @Override
+        public String toString() {
+            return "TaskSetResult{" +
+                    "taskSetName='" + taskSetName + '\'' +
+                    ", allSuccess=" + allSuccess +
+                    ", resultMap=" + resultMap +
+                    '}';
         }
     }
 

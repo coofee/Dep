@@ -29,6 +29,8 @@ public class Task<V> {
 
     private volatile TaskResult<V> mTaskResult;
 
+    private volatile ParentTaskError mParentTaskError;
+
     public Task(String name, Callable<V> callable) {
         this(name, callable, false);
     }
@@ -118,21 +120,35 @@ public class Task<V> {
     };
 
     private void innerExecute() {
+        synchronized (this) {
+            if (mTaskState != STATE_NEW) {
+                return;
+            }
+        }
+
         fireBeforeExecute();
 
-        Log.d(TAG, "start execute task=" + this);
+        Log.d(TAG, "start execute task=" + mName);
         if (Log.sDebug && Log.SUPPORT_TRACE) {
             Trace.beginSection(mName);
         }
 
+        final ParentTaskError parentTaskError;
         synchronized (this) {
             mTaskResult = null;
             mTaskState = STATE_RUNNING;
+            parentTaskError = mParentTaskError;
         }
 
         TaskResult<V> taskResult;
         try {
-            taskResult = TaskResult.success(this.mCallable.call());
+            if (parentTaskError == null) {
+                taskResult = TaskResult.success(this.mCallable.call());
+            } else {
+                // fail fast when parent task execute error.
+                Log.e(TAG, parentTaskError.getMessage());
+                taskResult = TaskResult.failure(parentTaskError);
+            }
         } catch (Throwable e) {
             Log.e(TAG, "fail execute task=" + mName, e);
             taskResult = TaskResult.failure(e);
@@ -147,7 +163,7 @@ public class Task<V> {
         if (Log.sDebug && Log.SUPPORT_TRACE) {
             Trace.endSection();
         }
-        Log.d(TAG, "end execute task=" + this);
+        Log.d(TAG, "end execute task=" + mName);
 
         fireAfterExecute();
 
@@ -191,8 +207,31 @@ public class Task<V> {
     private void onParentTaskFinished(Task parentTask) {
         mParentTaskList.remove(parentTask);
 
+        final TaskResult parentTaskResult = parentTask.mTaskResult;
+        if (parentTaskResult.isFailure()) {
+            // fail fast.
+            // it is difficult to cancel all incomplete parent task,
+            // just clear them and they will continue execute.
+            mParentTaskList.clear();
+
+            synchronized (this) {
+                if (mParentTaskError == null) {
+                    // only save first parent task error.
+                    final String cause = "fail execute task=" + mName + " caused by " + parentTask.mName;
+                    mParentTaskError = new ParentTaskError(cause, parentTaskResult.error());
+                }
+            }
+
+        }
+
         if (mParentTaskList.isEmpty()) {
             execute();
+        }
+    }
+
+    public static class ParentTaskError extends Exception {
+        public ParentTaskError(String message, Throwable cause) {
+            super(message, cause);
         }
     }
 }
