@@ -113,34 +113,10 @@ public class TaskManager {
     }
 
     public <T> T getTaskResult(String taskName, @TaskManager.Mode int mode) {
-        if (taskName == null) {
-            Log.d(TAG, "getTaskResult; taskName is null, just return.");
-            return null;
-        }
-
-        Task targetTask = null;
-
-        for (Map.Entry<String, Task> entry : mTaskMap.entrySet()) {
-            Task task = entry.getValue();
-            if (taskName.equals(task.getName())) {
-                targetTask = task;
-
-            } else if (task instanceof TaskSet) {
-                targetTask = ((TaskSet) task).getTask(taskName);
-
-            }
-
-            if (targetTask != null) {
-                break;
-            }
-        }
-
+        Task targetTask = getTask(taskName);
         if (targetTask == null) {
-            Log.d(TAG, "getTaskResult; cannot find task by name=" + taskName);
             return null;
         }
-
-        Log.d(TAG, "getTaskResult; find task=" + targetTask + " by name=" + taskName);
 
         if (Task.STATE_COMPLETED == targetTask.getTaskState()) {
             TaskResult taskResult = targetTask.getTaskResult();
@@ -171,6 +147,38 @@ public class TaskManager {
         }
 
         return null;
+    }
+
+    public <T> Task<T> getTask(String taskName) {
+        if (taskName == null) {
+            Log.d(TAG, "getTask; taskName is null, just return.");
+            return null;
+        }
+
+        Task targetTask = null;
+
+        for (Map.Entry<String, Task> entry : mTaskMap.entrySet()) {
+            Task task = entry.getValue();
+            if (taskName.equals(task.getName())) {
+                targetTask = task;
+
+            } else if (task instanceof TaskSet) {
+                targetTask = ((TaskSet) task).getTask(taskName);
+
+            }
+
+            if (targetTask != null) {
+                break;
+            }
+        }
+
+        if (targetTask == null) {
+            Log.e(TAG, "getTask; cannot find task by name=" + taskName);
+        } else {
+            Log.d(TAG, "getTask; find task=" + targetTask + " by name=" + taskName);
+        }
+
+        return (Task<T>) targetTask;
     }
 
 
