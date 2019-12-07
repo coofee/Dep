@@ -55,7 +55,8 @@ abstract class ServiceCreator<V>(val serviceName: String, val async: Boolean) : 
 }
 
 fun <V> from(serviceCreator: ServiceCreator<V>): Task<V> {
-    return Task<V>(serviceCreator.serviceName, serviceCreator, serviceCreator.async)
+    val threadMode = if (serviceCreator.async) Task.THREAD_MODE_ASYNC else Task.THREAD_MODE_UI_BLOCK
+    return Task<V>(serviceCreator.serviceName, serviceCreator, threadMode)
 }
 
 class CacheServiceCreator<V>(private val callable: Callable<V>) : Callable<V> {
@@ -74,7 +75,8 @@ fun <V> from(serviceName: String, callable: Callable<V>): Task<V> {
 }
 
 fun <V> from(serviceName: String, async: Boolean, callable: Callable<V>): Task<V> {
-    return Task<V>(serviceName, CacheServiceCreator(callable), async)
+    val threadMode = if (async) Task.THREAD_MODE_ASYNC else Task.THREAD_MODE_UI_BLOCK
+    return Task<V>(serviceName, CacheServiceCreator(callable), threadMode)
 }
 
 

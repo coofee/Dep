@@ -1,5 +1,6 @@
 package com.coofee.dep.executor;
 
+import com.coofee.dep.Task;
 import com.coofee.dep.TaskExecutor;
 
 import java.util.concurrent.Executor;
@@ -44,12 +45,21 @@ public class JavaExecutor implements TaskExecutor {
     }
 
     @Override
-    public void ui(Runnable task) {
-        MAIN_THREAD.execute(task);
-    }
+    public void execute(int threadMode, Runnable task) {
+        switch (threadMode) {
+            case Task.THREAD_MODE_UI_BLOCK:
+            case Task.THREAD_MODE_UI_ENQUEUE:
+            case Task.THREAD_MODE_UI_IDLE:
+                MAIN_THREAD.execute(task);
+                break;
 
-    @Override
-    public void work(Runnable task) {
-        THREAD_POOL_EXECUTOR.execute(task);
+            case Task.THREAD_MODE_ASYNC:
+                THREAD_POOL_EXECUTOR.execute(task);
+                break;
+
+            default:
+                // ignore unknown thread mode
+                break;
+        }
     }
 }

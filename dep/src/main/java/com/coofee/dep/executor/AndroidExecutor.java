@@ -2,8 +2,10 @@ package com.coofee.dep.executor;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.os.MessageQueue;
 
 import com.coofee.dep.Log;
+import com.coofee.dep.Task;
 import com.coofee.dep.TaskExecutor;
 
 import java.util.concurrent.LinkedBlockingQueue;
@@ -16,6 +18,7 @@ public class AndroidExecutor implements TaskExecutor {
 
     private static final Looper MAIN_LOOPER = Looper.getMainLooper();
     private static final Handler UI_THREAD = new Handler(MAIN_LOOPER);
+    private static final MessageQueue MAIN_MESSAGE_QUEUE = Looper.myQueue();
 
     private static final ThreadPoolExecutor THREAD_POOL_EXECUTOR;
 
@@ -39,16 +42,41 @@ public class AndroidExecutor implements TaskExecutor {
     }
 
     @Override
-    public void ui(Runnable task) {
-        if (task == null) {
-            return;
+    public void execute(int threadMode, final Runnable task) {
+        switch (threadMode) {
+            case Task.THREAD_MODE_UI_BLOCK: {
+                if (Looper.myLooper() == Looper.getMainLooper()) {
+                    task.run();
+                } else {
+                    UI_THREAD.post(task);
+                }
+            }
+            break;
+
+            case Task.THREAD_MODE_UI_ENQUEUE: {
+                UI_THREAD.post(task);
+            }
+            break;
+
+            case Task.THREAD_MODE_UI_IDLE: {
+                MAIN_MESSAGE_QUEUE.addIdleHandler(new MessageQueue.IdleHandler() {
+                    @Override
+                    public boolean queueIdle() {
+                        task.run();
+                        return false;
+                    }
+                });
+            }
+            break;
+
+            case Task.THREAD_MODE_ASYNC: {
+                THREAD_POOL_EXECUTOR.execute(task);
+            }
+            break;
+
+            default:
+                // ignore unknown thread mode
+                break;
         }
-
-        UI_THREAD.post(task);
-    }
-
-    @Override
-    public void work(Runnable task) {
-        THREAD_POOL_EXECUTOR.execute(task);
     }
 }

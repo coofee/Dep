@@ -20,9 +20,19 @@ public class Task<V> {
     @interface TaskState {
     }
 
+    public static final int THREAD_MODE_UI_BLOCK = 0;
+    public static final int THREAD_MODE_UI_ENQUEUE = 1;
+    public static final int THREAD_MODE_UI_IDLE = 2;
+    public static final int THREAD_MODE_ASYNC = 3;
+
+    @IntDef(value = {THREAD_MODE_UI_BLOCK, THREAD_MODE_UI_ENQUEUE, THREAD_MODE_UI_IDLE, THREAD_MODE_ASYNC})
+    @interface ThreadMode {
+
+    }
+
     private final String mName;
     private final Callable<V> mCallable;
-    private final boolean mAsync;
+    private final int mThreadMode;
     private final CopyOnWriteArrayList<TaskExecutionListener> mListenerList = new CopyOnWriteArrayList<>();
 
     private volatile int mTaskState = STATE_NEW;
@@ -32,21 +42,21 @@ public class Task<V> {
     private volatile ParentTaskError mParentTaskError;
 
     public Task(String name, Callable<V> callable) {
-        this(name, callable, false);
+        this(name, callable, THREAD_MODE_UI_BLOCK);
     }
 
-    public Task(String name, Callable<V> callable, boolean async) {
+    public Task(String name, Callable<V> callable, int threadMode) {
         this.mName = name;
         this.mCallable = callable;
-        this.mAsync = async;
+        this.mThreadMode = threadMode;
     }
 
     @Override
     public String toString() {
         return "Task{" +
-                "mName='" + mName + '\'' +
-                ", mAsync=" + mAsync +
-                ", mTaskState=" + mTaskState +
+                "name='" + mName + '\'' +
+                ", threadMode=" + mThreadMode +
+                ", taskState=" + mTaskState +
                 '}';
     }
 
@@ -92,12 +102,7 @@ public class Task<V> {
     }
 
     public void execute() {
-        TaskExecutor taskExecutor = TaskManager.getInstance().getTaskExecutor();
-        if (mAsync) {
-            taskExecutor.work(mInnerTask);
-        } else {
-            taskExecutor.ui(mInnerTask);
-        }
+        TaskManager.getInstance().getTaskExecutor().execute(mThreadMode, mInnerTask);
     }
 
     protected void fireBeforeExecute() {
