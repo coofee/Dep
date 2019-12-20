@@ -100,10 +100,28 @@ public class TaskManager {
     public void waitForCompleted() {
         for (Map.Entry<String, Task> entry : mTaskMap.entrySet()) {
             final Task task = entry.getValue();
+            Log.d(TAG, "waitForCompleted; try wait task=" + task);
             try {
                 task.waitForTaskResult();
             } catch (InterruptedException e) {
-                Log.d(TAG, "interrupt task=" + task + " waitForTaskResult", e);
+                Log.d(TAG, "waitForCompleted; interrupt task=" + task + " waitForTaskResult", e);
+            }
+        }
+    }
+
+    public void waitForCompleted(TaskFilter filter) {
+        for (Map.Entry<String, Task> entry : mTaskMap.entrySet()) {
+            final Task task = entry.getValue();
+            if (!filter.accept(task)) {
+                Log.d(TAG, "waitForCompleted; skip task=" + task);
+                continue;
+            }
+
+            Log.d(TAG, "waitForCompleted; try wait task=" + task);
+            try {
+                task.waitForTaskResult();
+            } catch (InterruptedException e) {
+                Log.d(TAG, "waitForCompleted; interrupt task=" + task + " waitForTaskResult", e);
             }
         }
     }
