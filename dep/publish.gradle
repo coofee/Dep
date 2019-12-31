@@ -20,7 +20,7 @@ publishing {
         aar(MavenPublication) {
             groupId 'com.wuba.wuxian.sdk'
             artifactId 'dep'
-            version "0.0.1"
+            version "0.0.3"
 
             artifact file("$buildDir/outputs/aar/dep-release.aar")
             artifact sourcesJar
