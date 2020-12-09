@@ -6,6 +6,24 @@
 
 # 如何使用？
 
+可以使用如下方式添加依赖：
+
+```gradle
+repositories {
+    mavenCentral()
+    jcenter()
+    maven {
+        url "https://orgcoofee.bintray.com/coofee"
+    }
+}
+
+dependencies {
+    compile 'com.coofee:dep:<lastest-version>'
+}
+```
+
+版本：[![](https://api.bintray.com/packages/orgcoofee/coofee/dep/images/download.svg)](https://bintray.com/orgcoofee/coofee/dep/_latestVersion)
+
 * 通过`TaskSet.Builder`创建任务结合管理任务之间的依赖关系。
 * 通过`TaskManager.getInstance().startTask()`来启动一个任务。
 * 通过`TaskExecutionListener`、`TaskSetExecutionListener`监听任务的执行情况。
