@@ -1,12 +1,12 @@
 package com.coofee.dep;
 
 import android.os.Trace;
-
 import androidx.annotation.IntDef;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class Task<V> {
@@ -33,7 +33,7 @@ public class Task<V> {
     private final String mName;
     private final Callable<V> mCallable;
     private final int mThreadMode;
-    private final CopyOnWriteArrayList<TaskExecutionListener> mListenerList = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArraySet<TaskExecutionListener> mListenerList = new CopyOnWriteArraySet<>();
 
     private volatile int mTaskState = STATE_NEW;
 
@@ -174,9 +174,23 @@ public class Task<V> {
 
         // try execute child task;
         if (!mChildTaskList.isEmpty()) {
-            for (Task task : mChildTaskList) {
+            final List<Task<?>> nonAsyncTaskList = new ArrayList<>(mChildTaskList.size());
+            for (Task<?> task : mChildTaskList) {
+                if (THREAD_MODE_ASYNC == task.mThreadMode) {
+                    // first execute async task for avoid other task block async task.
+                    task.onParentTaskFinished(this);
+                } else {
+                    nonAsyncTaskList.add(task);
+                }
+            }
+            // execute other task.
+            for (Task<?> task : nonAsyncTaskList) {
                 task.onParentTaskFinished(this);
             }
+
+//            for (Task task : mChildTaskList) {
+//                task.onParentTaskFinished(this);
+//            }
         }
     }
 
