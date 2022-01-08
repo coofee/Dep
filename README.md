@@ -6,6 +6,26 @@
 
 # 如何使用？
 
+## 添加依赖
+
+```groovy
+
+allprojects {
+    repositories {
+        maven { url "https://jitpack.io" }
+    }
+}
+
+
+dependencies {
+    implementation 'com.github.coofee:Dep:<latest version>'
+}
+```
+
+最新版本：[![](https://jitpack.io/v/coofee/Dep.svg)](https://jitpack.io/#coofee/Dep)
+
+## API 说明
+
 * 通过`TaskSet.Builder`创建任务结合管理任务之间的依赖关系。
 * 通过`TaskManager.getInstance().startTask()`来启动一个任务。
 * 通过`TaskExecutionListener`、`TaskSetExecutionListener`监听任务的执行情况。
@@ -84,4 +104,7 @@ python systrace.py -a com.coofee.dep.demo -o trace.html sched freq
 2. 优化任务间的依赖关系，尽可能减少等待时间。
 3. 拆解耗时长的任务为多个子任务，并行加速任务执行。
 
+# License
+
+Dep is licensed under the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt).
 
