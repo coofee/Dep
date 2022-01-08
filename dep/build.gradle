@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 29
@@ -32,4 +34,36 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+}
+
+afterEvaluate {
+    publish.dependsOn assembleRelease
+    publish.mustRunAfter assembleRelease
+
+    publishToMavenLocal.dependsOn assembleRelease
+    publishToMavenLocal.mustRunAfter assembleRelease
+
+    publishing {
+
+//        repositories {
+//            maven {
+//                url "${MAVEN_URL}"
+//                credentials {
+//                    username MAVEN_USERNAME
+//                    password MAVEN_PASSWORD
+//                }
+//            }
+//        }
+
+        publications {
+            aar(MavenPublication) {
+                from components.release
+                groupId 'com.coofee'
+                artifactId 'dep'
+                version '0.0.7'
+
+//                artifact file("$buildDir/outputs/aar/${project.name}-release.aar")
+            }
+        }
+    }
 }
